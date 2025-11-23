@@ -1,62 +1,38 @@
 import mediapipe as mp
+import numpy as np
+import pickle
+
+# Carrega modelo IA
+try:
+    modelo_ml = pickle.load(open("modelo_bracos.pkl", "rb"))
+    IA_ATIVA = True
+except:
+    print("[AVISO] Modelo IA nao encontrado!")
+    IA_ATIVA = False
 
 mp_pose = mp.solutions.pose
 
-def detectar_ombros_caidos(landmarks):
-    """
-    Detecta se os ombros estão caídos comparando a posição vertical
-    da orelha com o ombro correspondente.
-    """
-
-    orelha_esq = landmarks[mp_pose.PoseLandmark.LEFT_EAR]
-    orelha_dir = landmarks[mp_pose.PoseLandmark.RIGHT_EAR]
-    ombro_esq = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER]
-    ombro_dir = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER]
-
-    #Calcula o quanto o ombro está abaixo da orelha. x(horinzontal), y(vertical), z(profunidade da imagem)
-    dif_esq = ombro_esq.y - orelha_esq.y
-    dif_dir = ombro_dir.y - orelha_dir.y
-
-    LIMITE = 0.30  # pode ajustar depois
-
-    #Retorna 2 valores ao mesmo tempo separados por vírgula (retorna uma tupla) Ex.: (True, False)
-    return dif_esq > LIMITE, dif_dir > LIMITE
-
-def dist(a, b):
-    """Calcula a distância euclidiana entre dois landmarks."""
-    return ((a.x - b.x)**2 + (a.y - b.y)**2)**0.5
 
 def bracos_cruzados(landmarks):
     """
-    Retorna True se os braços estiverem cruzados.
-    O parâmetro limite_dist ajusta a sensibilidade da detecção.
+    IA pura — usa somente o modelo ML treinado.
+    Retorna True se a IA identificar braços cruzados.
     """
- # Pega os landmarks importantes
-    mao_esq = landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value]
-    mao_dir = landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value]
-    cotovelo_esq = landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value]
-    cotovelo_dir = landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value]
-    ombro_esq = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value]
-    ombro_dir = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value]
 
-    # ---------------------------
-    #   REGRA 1 — Versão robusta (cruzamento natural na frente do tronco)
-    # ---------------------------
-    cruz_esq = dist(mao_esq, cotovelo_dir) < dist(mao_esq, cotovelo_esq)
-    cruz_dir = dist(mao_dir, cotovelo_esq) < dist(mao_dir, cotovelo_dir)
-    maos_proximas = dist(mao_esq, mao_dir) < 0.15
-    cotovelos_baixos = (cotovelo_esq.y > ombro_esq.y and
-                        cotovelo_dir.y > ombro_dir.y)
+    if not IA_ATIVA:
+        return False  # impede erro caso o modelo não exista
 
-    cruzamento_natural = cruz_esq and cruz_dir and maos_proximas and cotovelos_baixos
+    vetor = []
 
-    # ---------------------------
-    #   REGRA 2 — Mão tocando ombro oposto
-    # ---------------------------
-    toque_ombro = (
-        dist(mao_esq, ombro_dir) < 0.2 or   # mão esquerda → ombro direito
-        dist(mao_dir, ombro_esq) < 0.2      # mão direita → ombro esquerdo
-    )
+    # Monta vetor com os 99 valores (x,y,z dos 33 landmarks)
+    for lm in landmarks:
+        vetor.extend([lm.x, lm.y, lm.z])
 
-    # Resultado final: se qualquer padrão ocorrer → braços cruzados
-    return cruzamento_natural or toque_ombro
+    vetor = np.array(vetor).reshape(1, -1)
+
+    # Predição
+    pred = modelo_ml.predict(vetor)[0]
+
+    # dependendo do treinamento, o label pode ser string ou número
+
+    return pred == 0
