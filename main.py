@@ -33,10 +33,7 @@ with mp_pose.Pose(min_detection_confidence=0.5,
             landmarks = result.pose_landmarks.landmark
 
         if postura.bracos_cruzados(landmarks):
-            cv2.putText(frame, "Evite cruzar os bracos ao apresentar!", 
-                    (30, 40), cv2.FONT_HERSHEY_SIMPLEX, 
-                    1, (0, 0, 255), 2)
-
+            cv2.putText(frame, "Bracos cruzados detectados!", (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         cv2.imshow("Pose Estimation", frame)
 

@@ -22,34 +22,32 @@ def detectar_ombros_caidos(landmarks):
     #Retorna 2 valores ao mesmo tempo separados por vírgula (retorna uma tupla) Ex.: (True, False)
     return dif_esq > LIMITE, dif_dir > LIMITE
 
+def dist(a, b):
+    """Calcula a distância euclidiana entre dois landmarks."""
+    return ((a.x - b.x)**2 + (a.y - b.y)**2)**0.5
 
-def bracos_cruzados(landmarks, limite_dist=0.12):
+def bracos_cruzados(landmarks):
     """
     Retorna True se os braços estiverem cruzados.
     O parâmetro limite_dist ajusta a sensibilidade da detecção.
     """
-
-    # atalhos para facilitar
-    ombro_dir = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value]
-    ombro_esq = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value]
-    punho_dir = landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value]
-    punho_esq = landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value]
-    cotovelo_dir = landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value]
+    mao_esq = landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value]
+    mao_dir = landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value]
     cotovelo_esq = landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value]
+    cotovelo_dir = landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value]
+    ombro_esq = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value]
+    ombro_dir = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value]
 
-    # Distância entre dois pontos (em coordenadas normalizadas)
-    def dist(a, b):
-        return ((a.x - b.x)**2 + (a.y - b.y)**2)**0.5
+    # Regras
+    cruz_esq = dist(mao_esq, cotovelo_dir) < dist(mao_esq, cotovelo_esq)
+    cruz_dir = dist(mao_dir, cotovelo_esq) < dist(mao_dir, cotovelo_dir)
 
-    # 1. Punho direito próximo do ombro esquerdo
-    direita_cruza = dist(punho_dir, ombro_esq) < limite_dist
+    maos_proximas = dist(mao_esq, mao_dir) < 0.15
 
-    # 2. Punho esquerdo próximo do ombro direito
-    esquerda_cruza = dist(punho_esq, ombro_dir) < limite_dist
+    cotovelos_baixos = (
+        cotovelo_esq.y > ombro_esq.y and
+        cotovelo_dir.y > ombro_dir.y
+    )
 
-    # 3. Cotovelos próximos (reforça a detecção)
-    cotovelos_proximos = dist(cotovelo_dir, cotovelo_esq) < limite_dist * 1.2
-
-    # Resultado final
-    return (direita_cruza and esquerda_cruza) or cotovelos_proximos
-
+    # Retorno final
+    return cruz_esq and cruz_dir and maos_proximas and cotovelos_baixos
