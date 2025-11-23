@@ -20,6 +20,7 @@ with mp_pose.Pose(min_detection_confidence=0.5,
 
         if result.pose_landmarks:
             mp_drawing.draw_landmarks(
+                
                 frame,
                 result.pose_landmarks,
                 mp_pose.POSE_CONNECTIONS
