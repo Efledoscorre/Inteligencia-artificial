@@ -2,37 +2,70 @@ import mediapipe as mp
 import numpy as np
 import pickle
 
-# Carrega modelo IA
-try:
-    modelo_ml = pickle.load(open("modelo_bracos.pkl", "rb"))
-    IA_ATIVA = True
-except:
-    print("[AVISO] Modelo IA nao encontrado!")
-    IA_ATIVA = False
-
 mp_pose = mp.solutions.pose
 
+# =============== CARREGAR MODELO BRACOS CRUZADOS ==================
 
-def bracos_cruzados(landmarks):
-    """
-    IA pura — usa somente o modelo ML treinado.
-    Retorna True se a IA identificar braços cruzados.
-    """
+try:
+    modelo_bracos = pickle.load(open("modelo_bracos.pkl", "rb"))
+    encoder_bracos = pickle.load(open("label_encoder.pkl", "rb"))
+    IA_BRACOS_ATIVA = True
+except:
+    print("[AVISO] Modelo IA de bracos cruzados nao encontrado!")
+    IA_BRACOS_ATIVA = False
 
-    if not IA_ATIVA:
-        return False  # impede erro caso o modelo não exista
 
+# =============== CARREGAR MODELO MAOS ESCONDIDAS ==================
+
+try:
+    modelo_maos = pickle.load(open("modelo_maos_escondidas.pkl", "rb"))
+    encoder_maos = pickle.load(open("label_maos_escondidas_encoder.pkl", "rb"))
+    IA_MAOS_ATIVA = True
+except:
+    print("[AVISO] Modelo IA de maos escondidas nao encontrado!")
+    IA_MAOS_ATIVA = False
+
+
+# ==================================================================
+# Função auxiliar para transformar landmarks em vetor 1D
+# ==================================================================
+
+def landmarks_para_vetor(landmarks):
     vetor = []
-
-    # Monta vetor com os 99 valores (x,y,z dos 33 landmarks)
     for lm in landmarks:
         vetor.extend([lm.x, lm.y, lm.z])
+    return np.array(vetor).reshape(1, -1)
 
-    vetor = np.array(vetor).reshape(1, -1)
 
-    # Predição
-    pred = modelo_ml.predict(vetor)[0]
+# ==================================================================
+# Função — Braços Cruzados
+# ==================================================================
 
-    # dependendo do treinamento, o label pode ser string ou número
+def bracos_cruzados(landmarks):
 
-    return pred == 0
+    if not IA_BRACOS_ATIVA:
+        return False
+
+    vetor = landmarks_para_vetor(landmarks)
+
+    pred = modelo_bracos.predict(vetor)[0]
+    label = encoder_bracos.inverse_transform([pred])[0]
+
+    return label == "bracos_cruzados"
+
+
+# ==================================================================
+# Função — Mãos Escondidas
+# ==================================================================
+
+def maos_escondidas(landmarks):
+
+    if not IA_MAOS_ATIVA:
+        return False
+
+    vetor = landmarks_para_vetor(landmarks)
+
+    pred = modelo_maos.predict(vetor)[0]
+    label = encoder_maos.inverse_transform([pred])[0]
+
+    return label == "maos_escondidas"

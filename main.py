@@ -20,7 +20,6 @@ with mp_pose.Pose(min_detection_confidence=0.5,
 
         if result.pose_landmarks:
             mp_drawing.draw_landmarks(
-                
                 frame,
                 result.pose_landmarks,
                 mp_pose.POSE_CONNECTIONS
@@ -28,11 +27,22 @@ with mp_pose.Pose(min_detection_confidence=0.5,
 
             landmarks = result.pose_landmarks.landmark
 
-            # IA 100%
+            # ==========================
+            # IA — Braços Cruzados
+            # ==========================
             if postura.bracos_cruzados(landmarks):
-                cv2.putText(frame, "Bracos cruzados detectados (IA)", 
-                            (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 
+                cv2.putText(frame, "Bracos cruzados detectados (IA)",
+                            (10, 40), cv2.FONT_HERSHEY_SIMPLEX,
                             1, (0, 0, 255), 2)
+
+            # ==========================
+            # IA — Mãos Escondidas
+            # ==========================
+            else:
+                if postura.maos_escondidas(landmarks):
+                    cv2.putText(frame, "Maos escondidas detectadas (IA)",
+                                (10, 80), cv2.FONT_HERSHEY_SIMPLEX,
+                                1, (255, 0, 0), 2)
 
         cv2.imshow("Pose Estimation", frame)
 
