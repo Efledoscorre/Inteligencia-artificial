@@ -7,8 +7,8 @@ mp_pose = mp.solutions.pose
 # =============== CARREGAR MODELO BRACOS CRUZADOS ==================
 
 try:
-    modelo_bracos = pickle.load(open("modelo_bracos.pkl", "rb"))
-    encoder_bracos = pickle.load(open("label_encoder.pkl", "rb"))
+    modelo_bracos = pickle.load(open("pkl\modelo_bracos.pkl", "rb"))
+    encoder_bracos = pickle.load(open("pkl\label_encoder.pkl", "rb"))
     IA_BRACOS_ATIVA = True
 except:
     print("[AVISO] Modelo IA de bracos cruzados nao encontrado!")
@@ -18,8 +18,8 @@ except:
 # =============== CARREGAR MODELO MAOS ESCONDIDAS ==================
 
 try:
-    modelo_maos = pickle.load(open("modelo_maos_escondidas.pkl", "rb"))
-    encoder_maos = pickle.load(open("label_maos_escondidas_encoder.pkl", "rb"))
+    modelo_maos = pickle.load(open("pkl\modelo_maos_escondidas.pkl", "rb"))
+    encoder_maos = pickle.load(open("pkl\label_maos_escondidas_encoder.pkl", "rb"))
     IA_MAOS_ATIVA = True
 except:
     print("[AVISO] Modelo IA de maos escondidas nao encontrado!")
@@ -29,8 +29,8 @@ except:
 # =============== CARREGAR MODELO CABECA BAIXA ==================
 
 try:
-    modelo_cabeca = pickle.load(open("modelo_cabeca_baixa.pkl", "rb"))
-    encoder_cabeca = pickle.load(open("label_cabeca_baixa_encoder.pkl", "rb"))
+    modelo_cabeca = pickle.load(open("pkl\modelo_cabeca_baixa.pkl", "rb"))
+    encoder_cabeca = pickle.load(open("pkl\label_cabeca_baixa_encoder.pkl", "rb"))
     IA_CABECA_ATIVA = True
 except:
     print("[AVISO] Modelo IA de cabeca baixa nao encontrado!")
