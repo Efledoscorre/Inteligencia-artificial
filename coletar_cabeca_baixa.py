@@ -59,6 +59,9 @@ if os.path.exists(CSV_OUT):
 label_atual = "cabeca_baixa"
 
 cap = cv2.VideoCapture(WEBCAM_INDEX)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+
 if not cap.isOpened():
     raise RuntimeError("Não foi possível abrir a webcam")
 

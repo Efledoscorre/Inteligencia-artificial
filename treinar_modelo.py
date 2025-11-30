@@ -5,7 +5,7 @@ from sklearn.ensemble import RandomForestClassifier
 import pickle
 
 # 1 — Carregar CSV
-df = pd.read_csv("dataset\dataset_cabeca_baixa.csv")   # coloque o nome do seu arquivo
+df = pd.read_csv("dataset\dataset_cabeca_baixa2.csv")   # coloque o nome do seu arquivo
 
 # 2 — Separar features (X) e labels (y)
 X = df.drop(columns=["label"])
