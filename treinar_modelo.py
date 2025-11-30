@@ -5,7 +5,7 @@ from sklearn.ensemble import RandomForestClassifier
 import pickle
 
 # 1 — Carregar CSV
-df = pd.read_csv("dataset\\dataset_maos_escondidas.csv")   # coloque o nome do seu arquivo
+df = pd.read_csv("dataset\dataset_cabeca_baixa.csv")   # coloque o nome do seu arquivo
 
 # 2 — Separar features (X) e labels (y)
 X = df.drop(columns=["label"])
@@ -29,11 +29,11 @@ acc = modelo.score(X_test, y_test)
 print(f"Acuracia: {acc * 100:.2f}%")
 
 # 7 — Salvar o modelo treinado
-with open("modelo_maos_escondidas.pkl", "wb") as f:
+with open("modelo_cabeca_baixa.pkl", "wb") as f:
     pickle.dump(modelo, f)
 
 # 8 — Salvar o label encoder (para decodificar 0/1)
-with open("label_maos_escondidas_encoder.pkl", "wb") as f:
+with open("label_cabeca_baixa_encoder.pkl", "wb") as f:
     pickle.dump(le, f)
 
 print("Modelo treinado e salvo com sucesso!")

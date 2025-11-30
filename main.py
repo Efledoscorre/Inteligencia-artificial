@@ -38,11 +38,18 @@ with mp_pose.Pose(min_detection_confidence=0.5,
             # ==========================
             # IA — Mãos Escondidas
             # ==========================
-            else:
-                if postura.maos_escondidas(landmarks):
-                    cv2.putText(frame, "Maos escondidas detectadas (IA)",
-                                (10, 80), cv2.FONT_HERSHEY_SIMPLEX,
-                                1, (255, 0, 0), 2)
+            elif postura.maos_escondidas(landmarks):
+                cv2.putText(frame, "Maos escondidas detectadas (IA)",
+                            (10, 80), cv2.FONT_HERSHEY_SIMPLEX,
+                            1, (255, 0, 0), 2)
+
+            # ==========================
+            # IA — Cabeça Baixa
+            # ==========================
+            if postura.cabeca_baixa(landmarks):
+                cv2.putText(frame, "Cabeca baixa detectada (IA)",
+                            (10, 120), cv2.FONT_HERSHEY_SIMPLEX,
+                            1, (0, 255, 255), 2)
 
         cv2.imshow("Pose Estimation", frame)
 

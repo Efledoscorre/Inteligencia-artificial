@@ -26,6 +26,17 @@ except:
     IA_MAOS_ATIVA = False
 
 
+# =============== CARREGAR MODELO CABECA BAIXA ==================
+
+try:
+    modelo_cabeca = pickle.load(open("modelo_cabeca_baixa.pkl", "rb"))
+    encoder_cabeca = pickle.load(open("label_cabeca_baixa_encoder.pkl", "rb"))
+    IA_CABECA_ATIVA = True
+except:
+    print("[AVISO] Modelo IA de cabeca baixa nao encontrado!")
+    IA_CABECA_ATIVA = False
+
+
 # ==================================================================
 # Função auxiliar para transformar landmarks em vetor 1D
 # ==================================================================
@@ -69,3 +80,20 @@ def maos_escondidas(landmarks):
     label = encoder_maos.inverse_transform([pred])[0]
 
     return label == "maos_escondidas"
+
+
+# ==================================================================
+# Função — Cabeça Baixa
+# ==================================================================
+
+def cabeca_baixa(landmarks):
+
+    if not IA_CABECA_ATIVA:
+        return False
+
+    vetor = landmarks_para_vetor(landmarks)
+
+    pred = modelo_cabeca.predict(vetor)[0]
+    label = encoder_cabeca.inverse_transform([pred])[0]
+
+    return label == "cabeca_baixa"
