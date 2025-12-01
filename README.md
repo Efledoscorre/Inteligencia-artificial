@@ -2,7 +2,7 @@
   <h2 align="center">Visão geral do projeto</h2>
 
   <h3 align="center">
-    Visão computacional 
+    Oratória inteligente 
     <br>
     </h3>
 </h3>
